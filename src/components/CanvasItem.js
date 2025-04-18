@@ -1,17 +1,15 @@
 import { useRef, memo } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { ItemTypes } from './ItemTypes';
-import ELEMENT_REGISTRY from './ElementRegistry';
+import ELEMENTS from './ElementRegistry';
 
-/* fallback so React never crashes even if a type is missing */
-const UnknownElement = () => (
-  <div style={{ color: 'red', fontStyle: 'italic' }}>Unknown element type</div>
-);
+const Unknown = () => <div style={{ color: 'red' }}>Unknown element</div>;
 
 const CanvasItem = ({
   id,
   index,
   type,
+  parentId = 'root', // NEW
   backgroundColor,
   moveItem,
   updateItem,
@@ -19,18 +17,25 @@ const CanvasItem = ({
 }) => {
   const ref = useRef(null);
 
-  /* drag ---------------------------------------------------------------- */
+  /* ---------------- DRAG ---------------- */
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.ELEMENT,
-    item: { id, index },
-    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+    item: {
+      id,
+      type,
+      parentId,
+      backgroundColor,
+      removeSelf: () => onDelete(id), // NEW
+    },
+    collect: (m) => ({ isDragging: m.isDragging() }),
   });
 
-  /* drop (for re‑ordering) --------------------------------------------- */
+  /* -------------- DROP (re‑order) -------------- */
   const [, drop] = useDrop({
     accept: ItemTypes.ELEMENT,
     hover: (dragItem) => {
       if (!ref.current || dragItem.id === id) return;
+      if (dragItem.parentId !== parentId) return; // only reorder within same parent
       moveItem(dragItem.id, index);
       dragItem.index = index;
     },
@@ -38,10 +43,8 @@ const CanvasItem = ({
 
   drag(drop(ref));
 
-  /* resolve the real element on every render */
-  const Element = ELEMENT_REGISTRY[type] || UnknownElement;
+  const Element = ELEMENTS[type] || Unknown;
 
-  /* render -------------------------------------------------------------- */
   return (
     <div
       ref={ref}
@@ -54,7 +57,7 @@ const CanvasItem = ({
         opacity: isDragging ? 0.5 : 1,
         cursor: 'move',
       }}>
-      {/* mini‑toolbar */}
+      {/* --- mini toolbar --- */}
       <div
         style={{
           position: 'absolute',
@@ -62,7 +65,6 @@ const CanvasItem = ({
           right: 6,
           display: 'flex',
           gap: 6,
-          alignItems: 'center',
         }}>
         <input
           type='color'
@@ -76,7 +78,6 @@ const CanvasItem = ({
             border: 'none',
             background: 'transparent',
             fontSize: 18,
-            lineHeight: 1,
             cursor: 'pointer',
           }}>
           ×
@@ -88,5 +89,4 @@ const CanvasItem = ({
   );
 };
 
-/* memo avoids unnecessary re‑renders during drag‑over churn */
 export default memo(CanvasItem);

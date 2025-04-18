@@ -2,44 +2,60 @@ import { useDrop } from 'react-dnd';
 import { useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ItemTypes } from './ItemTypes';
-// import ELEMENT_REGISTRY from './ElementRegistry';
+import ELEMENTS from './ElementRegistry';
 
 import CanvasItem from './CanvasItem';
 
 const Canvas = () => {
   const [items, setItems] = useState([]);
 
-  /* drop new elements from the sidebar */
+  /* ---------------- DROP zone (root) ---------------- */
   const [, drop] = useDrop({
     accept: ItemTypes.ELEMENT,
-    drop: (draggedItem) => {
-      if ('id' in draggedItem) return;
+    drop: (dragged, monitor) => {
+      if (monitor.didDrop()) return; // inner container handled it
 
-      const { type } = draggedItem;
-      if (!type) return; // safety
+      // Moving FROM a container ➜ root
+      if ('id' in dragged) {
+        if (dragged.parentId !== 'root') {
+          dragged.removeSelf();
+          setItems((prev) => [
+            ...prev,
+            {
+              id: dragged.id,
+              type: dragged.type,
+              backgroundColor: dragged.backgroundColor,
+            },
+          ]);
+        }
+        return;
+      }
 
+      // From sidebar ➜ root
       setItems((prev) => [
         ...prev,
-        { id: uuidv4(), type, backgroundColor: '#ffffff' },
+        {
+          id: uuidv4(),
+          type: dragged.type,
+          backgroundColor: '#ffffff',
+        },
       ]);
     },
   });
 
-  /* reorder ------------------------------------------------------------- */
-  const moveItem = useCallback((dragId, hoverIndex) => {
+  /* ---------------- helpers ---------------- */
+  const moveItem = useCallback((dragId, hoverIdx) => {
     setItems((prev) => {
-      const fromIndex = prev.findIndex((it) => it.id === dragId);
-      if (fromIndex === -1 || hoverIndex < 0 || hoverIndex >= prev.length)
+      const fromIdx = prev.findIndex((it) => it.id === dragId);
+      if (fromIdx === -1 || hoverIdx < 0 || hoverIdx >= prev.length)
         return prev;
-
       const next = [...prev];
-      const [removed] = next.splice(fromIndex, 1);
-      next.splice(hoverIndex, 0, removed);
+      const [removed] = next.splice(fromIdx, 1);
+      next.splice(hoverIdx, 0, removed);
       return next;
     });
   }, []);
 
-  /* small helpers */
   const patchItem = useCallback(
     (id, patch) =>
       setItems((prev) =>
@@ -52,13 +68,12 @@ const Canvas = () => {
     []
   );
 
-  /* render -------------------------------------------------------------- */
+  /* ---------------- render ---------------- */
   return (
     <div
       ref={drop}
       style={{
         width: 640,
-        minHeight: 400,
         margin: '0 auto',
         border: '2px dashed #ccc',
         padding: 20,
@@ -70,6 +85,7 @@ const Canvas = () => {
           id={it.id}
           index={idx}
           type={it.type}
+          parentId='root' // NEW
           backgroundColor={it.backgroundColor}
           moveItem={moveItem}
           updateItem={patchItem}
