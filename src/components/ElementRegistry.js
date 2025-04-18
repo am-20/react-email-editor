@@ -7,6 +7,7 @@ import TwoColumnImages from './Elements/TwoColumnImages';
 import ButtonItem from './Elements/ButtonItem';
 import SpacerItem from './Elements/SpacerItem';
 import ButtonGroup from './Elements/ButtonGroup';
+import HalfTextItem from './Elements/HalfTextItem';
 
 /**
  * Central map: sidebar “type” ➜ actual React component.
@@ -22,6 +23,7 @@ const ELEMENT_REGISTRY = {
   spacer: SpacerItem,
   'two-column': TwoColumnImages,
   'button-group': ButtonGroup,
+  'half-text': HalfTextItem,
 };
 
 export default ELEMENT_REGISTRY;

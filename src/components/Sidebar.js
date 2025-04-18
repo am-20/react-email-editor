@@ -11,5 +11,6 @@ export const Sidebar = () => (
     <DraggableItem type='button' label='Button' />
     <DraggableItem type='button-group' label='Button Group' />
     <DraggableItem type='spacer' label='SpacerItem' />
+    <DraggableItem type='half-text' label='Half Text' />
   </div>
 );
