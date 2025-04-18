@@ -9,6 +9,7 @@ export const Sidebar = () => (
     <DraggableItem type='image' label='Image' />
     <DraggableItem type='two-column' label='2 Column Images' />
     <DraggableItem type='button' label='Button' />
+    <DraggableItem type='button-group' label='Button Group' />
     <DraggableItem type='spacer' label='SpacerItem' />
   </div>
 );

@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export default function ButtonItem() {
   const [src, setSrc] = useState();
-  const [link, setLink] = useState('https://www.samsung.com/kz_ru/');
+  const [link, setLink] = useState('');
 
   return (
     <div style={{ textAlign: 'center' }}>
