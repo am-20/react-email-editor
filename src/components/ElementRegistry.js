@@ -3,7 +3,8 @@ import Title from './Elements/Title';
 import Text from './Elements/Text';
 import Disclaimer from './Elements/Disclaimer';
 import ImageItem from './Elements/ImageItem';
-import TwoColumnImages from './Elements/TwoColumnImages';
+import ColumnsImage from './Elements/ColumnsImage';
+import ColumnsContent from './Elements/ColumnsContent';
 import ButtonItem from './Elements/ButtonItem';
 import SpacerItem from './Elements/SpacerItem';
 import ButtonGroup from './Elements/ButtonGroup';
@@ -22,7 +23,8 @@ const ELEMENT_REGISTRY = {
   image: ImageItem,
   button: ButtonItem,
   spacer: SpacerItem,
-  'two-column': TwoColumnImages,
+  'columns-image': ColumnsImage,
+  'columns-content': ColumnsContent,
   'button-group': ButtonGroup,
   'half-text': HalfTextItem,
   'round-container': RoundContainer,
