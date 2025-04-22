@@ -1,14 +1,28 @@
-export const ExportButton = () => {
+import generateEmailHtml from '../utils/generateEmailHtml';
+
+export default function ExportButton() {
   const handleExport = () => {
-    const content = document.getElementById('export-canvas').outerHTML;
-    const blob = new Blob([content], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'email-template.html';
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const html = generateEmailHtml();
+      const blob = new Blob([html], { type: 'text/html;charset=UTF‑8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'email‑template.html';
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      // eslint‑disable‑next‑line no‑alert
+      alert(err.message || 'Unable to export template');
+    }
   };
 
-  return <button onClick={handleExport}>Export HTML</button>;
-};
+  return (
+    <button
+      type='button'
+      onClick={handleExport}
+      style={{ marginLeft: 8, padding: '6px 12px', cursor: 'pointer' }}>
+      Export HTML
+    </button>
+  );
+}

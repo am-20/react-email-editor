@@ -71,6 +71,7 @@ const Canvas = () => {
   /* ---------------- render ---------------- */
   return (
     <div
+      id='export-canvas'
       ref={drop}
       style={{
         width: 640,
